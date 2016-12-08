@@ -5,8 +5,9 @@ class Chromossome():
         self.chromossome_size = chromossome_size
         self.crossover_tax = crossover_tax
         self.mutation_chance = mutation_chance
-        self.fitness = 0
-        self.value = sample(xrange(1,self.chromossome_size + 1),  self.chromossome_size)
+        self.relative_fitness = 0
+        self.absolute_fitness = 0
+        self.value = sample(xrange(1, self.chromossome_size + 1),  self.chromossome_size)
         self.value.append(self.value[0])
         
     def crossover(self, chromossome_2):
@@ -19,7 +20,7 @@ class Chromossome():
         son_2.value = chromossome_2.value[0 : cutpoint] + self.value[cutpoint : (len(self.value))] 
         sons.append(son_2)
         return sons
-
+    
     def mutation(self):
         for i in range(self.chromossome_size):
             mutated_value = int(random()*self.chromossome_size)
@@ -27,13 +28,7 @@ class Chromossome():
                 self.value[i] = mutated_value
 
     def __str__(self):
-        return "Value => {0} : Fitness => {1}".format(self.value, self.fitness)
-
-    def verify_valid_son(self, **cities):
-        if cities[int(self.value[i])][int(self.value[i+1])] == -1:
-            self.value = sample(xrange(1,self.chromossome_size + 1),  self.chromossome_size)
-            self.value.append(self.value[0])
-            self.verify_valid_son(cities)
+        return "Value => {0} : Absolute Fitness => {1}; Relative Fitness => {2}".format(self.value, self.absolute_fitness, self.relative_fitness)
         
 if __name__ == "__main__":
 ##    population = []
@@ -49,9 +44,9 @@ if __name__ == "__main__":
 ##        population[i].mutation()
 ##        print population[i].value
     chro_1 = Chromossome(4,0.6,0.1)
-    print chro_1.value
+    print chro_1
     chro_2 = Chromossome(4,0.6,0.1)
-    print chro_2.value
+    print chro_2
     chro_1.mutation()
     sons = chro_1.crossover(chro_2)
     print chro_1
