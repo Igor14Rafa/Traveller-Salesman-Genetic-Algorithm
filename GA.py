@@ -13,6 +13,7 @@ class GA():
         self.population = []
         self.selection = selection
         self.error = 0.1
+        self.elitism_tax = 0.1
 
     def get_cities(self, filename):
         f = open(filename, "r")
@@ -86,17 +87,18 @@ class GA():
                 fitness_best = self.population[i].relative_fitness
         return population[index_best]
 
-    def elitism(self):
+    def elitism(self, population):
         elitist_vector = []
-        elitism_size = int(self.elitism*self.pop_size)
+        elitism_size = int(self.elitism_tax*self.pop_size)
         aux_population = self.population
-        for i in range(elitism_size):
-            elitist_vector.append(self.elitism(aux_population))
+        for _ in range(elitism_size):
+            elitist_vector.append(self.get_best(aux_population))
+            aux_population.pop(self.get_best(aux_population))
         return elitist_vector
 
     def generation(self):
         new_population = []
-        new_population.append(self.elitism())
+        new_population.append(self.elitism(self.population))
         while(len(self.population) < self.pop_size):
             if self.selection == 0:
                 father1 = self.roulette()
@@ -127,7 +129,9 @@ class GA():
     def run_process(self):
         self.get_cities("cidades.txt")
         self.init_pop()
-        while not self.verify_convergence():
+        generation_index = 1
+        while (self.verify_convergence()):
+            print "Generation {0}".format(generation_index)
             self.fitness(self.population)
             self.generation()
         print self.get_best(self.population)
