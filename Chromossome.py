@@ -12,23 +12,25 @@ class Chromossome():
         self.value.append(self.value[0])
 
     """ Implementation of the default crossover operator.
-         This crossover calculates a cutpoint and split the two fathers at this point,
-          joining different parts of each one to make a new son.
+         This crossover calculates a cutpoint
+         and split the two fathers at this point,
+         joining different parts of each one to make a new son.
     """
     def crossover(self, chromossome_2):
         sons = []
         cutpoint = int(random() * self.chromossome_size)
         son_1 = Chromossome(self.chromossome_size, self.crossover_tax, self.mutation_chance)
-        son_1.value = self.value[0 : cutpoint] + chromossome_2.value[cutpoint : (len(self.value))] 
+        son_1.value = self.value[0: cutpoint] + chromossome_2.value[cutpoint: (len(self.value))] 
         sons.append(son_1)
         son_2 = Chromossome(self.chromossome_size, self.crossover_tax, self.mutation_chance)
-        son_2.value = chromossome_2.value[0 : cutpoint] + self.value[cutpoint : (len(self.value))] 
+        son_2.value = chromossome_2.value[0: cutpoint] + self.value[cutpoint: (len(self.value))] 
         sons.append(son_2)
         return sons
     
-    """ Implementation of the default mutation operator.
-         This operator calculates if the "mutation" will occur in any of the "genes"(cities) in chromossome,
-         based on the mutation chance.
+    """Implementation of the default mutation operator.
+        This operator calculates if the "mutation" will occur
+        in any of the "genes"(cities) in chromossome,
+        based on the mutation chance.
     """
     def mutation(self):
         for i in range(self.chromossome_size):

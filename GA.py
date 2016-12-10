@@ -26,10 +26,9 @@ class GA():
         for line in f:
             self.cities[key] = map(int, line.split())
             key += 1
-        f.close()    
-
-    """ Initialize the population.
-    """
+        f.close()
+        
+    """ Initialize the population."""
     def init_pop(self):
         for i in range(self.pop_size):
             chromossome = Chromossome(self.chromossome_size, self.crossover_tax, self.mutation_chance)
@@ -48,8 +47,7 @@ class GA():
                 chromossome.absolute_fitness += self.cities[int(chromossome.value[i])][int(chromossome.value[i + 1]) - 1] #At each two sequential "cities" in chromossome, adds the edge value to the fitness.
             chromossome.relative_fitness = 1.0/chromossome.absolute_fitness
             
-    """ Verify if the "chromossome" is a valid solution for the Traveller Salesman Problem.
-    """
+    """ Verify if the "chromossome" is a valid solution for the Traveller Salesman Problem."""
     def verify_valid_son(self, chromossome):
         generate_new_son = False
         for i in range(len(chromossome.value) - 1):
@@ -57,17 +55,16 @@ class GA():
                 generate_new_son = True
         if(chromossome.value[0] != chromossome.value[-1]): #Verify if the route in chromossome returns to its origin.
             generate_new_son = True
-        for i in range(1, self.chromossome_size - 1):
+        for i in range(0, self.chromossome_size - 1):
             for j in range(i + 1, self.chromossome_size):
-                if chromossome.value[i] == chromossome.value[j]: #Verify if each city is visited only once. 
+                if chromossome.value[i] == chromossome.value[j]: #Verify if each city (except origin) is visited only once. 
                     generate_new_son = True
         if generate_new_son == True:
             chromossome.value = sample(xrange(1, self.chromossome_size + 1),  self.chromossome_size)
             chromossome.value.append(chromossome.value[0])
             self.verify_valid_son(chromossome)
             
-    """ Implementation of the tournament selection operator.
-    """
+    """ Implementation of the tournament selection operator."""
     def tournament(self):
         fathers = []
         best_index = 0
@@ -79,8 +76,7 @@ class GA():
                 best_fitness = fathers[i].relative_fitness
         return fathers[best_index]
     
-    """ Implementation of the roulette selection ooperator. 
-    """
+    """ Implementation of the roulette selection ooperator. """
     def roulette(self):
         index = 0
         aux_sum = 0
@@ -92,16 +88,14 @@ class GA():
         index = i - 1
         return self.population[index]
     
-    """ Returns the sum of all fitness in population.
-    """
+    """ Returns the sum of all fitness in population."""
     def sum_all_fitness(self):
         sum_fitness = 0
         for chromossome in self.population:
             sum_fitness += chromossome.relative_fitness
         return sum_fitness
 
-    """ Gets the best chromossome in population, according to its relative fitness.
-    """
+    """ Gets the best chromossome in population, according to its relative fitness."""
     def get_best(self, population):
         index_best = 0
         fitness_best = 0
@@ -118,9 +112,9 @@ class GA():
         new_population = []
         index_fathers = 1
         index_sons = 1
-        if self.selection == 0:
+        if self.selection == 0: 
             print "Selection Mode: Roulette"
-        else:
+        else: 
             print "Selection Mode: Tournament"
         while(len(new_population) < self.pop_size):
             if self.selection == 0:
@@ -144,8 +138,7 @@ class GA():
         self.population = deepcopy(new_population)
         self.fitness(self.population)
         
-    """Calculates the media of the fitness in population
-    """
+    """Calculates the media of the fitness in population."""
     def calc_media(self, population):
         media = 0.0
         for chromossome in population:
@@ -154,7 +147,7 @@ class GA():
         return media
 
     """ Verify if the population is converging,
-          calculating the difference between the media and the best chromossome inn population.
+          calculating the difference between the media and the best chromossome in population.
     """
     def verify_convergence(self):
         convergence = False
@@ -163,8 +156,7 @@ class GA():
             convergence = True
         return convergence
     
-    """ The main process of the genetic algorithm.
-    """
+    """ The main process of the genetic algorithm."""
     def process(self):
         self.get_cities("cidades.txt")
         self.init_pop()
@@ -177,7 +169,8 @@ class GA():
         print "\n\n\t\tBEST SOLUTION FOUND AT GENERATION {0}.\nBest is : {1}".format(generation_index, self.population[self.get_best(self.population)])
         print "Number of Generations: {0}.\n".format(generation_index)
         print "Population Converged.\n"
+        return self.population[self.get_best(self.population)]
             
 if __name__ == "__main__":
-    test = GA(10, 10, 0.5, 0.1, 5, 3, 1)
+    test = GA(10, 10, 0.5, 0.2, 5, 3, 0)
     test.process()
