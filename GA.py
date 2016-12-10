@@ -2,6 +2,7 @@ from Chromossome import *
 from copy import *
 
 
+
 class GA():
     def __init__(self, num_gen=100, pop_size=50, cross_tax=0.5,
                          mut_chance=0.1, chrom_size=5, tourn_size=3, selection=1):
@@ -15,7 +16,10 @@ class GA():
         self.population = []
         self.selection = selection
         self.error = 0.01
-
+        
+    """ Creates the dict "cities" with the info of the problem,
+          given by the file "filename".
+    """
     def get_cities(self, filename):
         f = open(filename, "r")
         key = 1
@@ -24,37 +28,46 @@ class GA():
             key += 1
         f.close()    
 
+    """ Initialize the population.
+    """
     def init_pop(self):
         for i in range(self.pop_size):
             chromossome = Chromossome(self.chromossome_size, self.crossover_tax, self.mutation_chance)
             self.verify_valid_son(chromossome)
             self.population.append(chromossome)    
 
+    """ Calculate the fitness for each chromossome in "population",
+          based on the route represented in the chromossome.
+    """
     def fitness(self, population):
         index = 0
         for chromossome in population:
             chromossome.absolute_fitness = 0
             chromossome.relative_fitness = 0
             for i in range(self.chromossome_size):
-                chromossome.absolute_fitness += self.cities[int(chromossome.value[i])][int(chromossome.value[i + 1]) - 1]
+                chromossome.absolute_fitness += self.cities[int(chromossome.value[i])][int(chromossome.value[i + 1]) - 1] #At each two sequential "cities" in chromossome, adds the edge value to the fitness.
             chromossome.relative_fitness = 1.0/chromossome.absolute_fitness
-
+            
+    """ Verify if the "chromossome" is a valid solution for the Traveller Salesman Problem.
+    """
     def verify_valid_son(self, chromossome):
         generate_new_son = False
         for i in range(len(chromossome.value) - 1):
-            if (self.cities[int(chromossome.value[i])][int(chromossome.value[i + 1]) - 1] == -1):
+            if (self.cities[int(chromossome.value[i])][int(chromossome.value[i + 1]) - 1] == -1): #Verify if each route in chromossome really exist.
                 generate_new_son = True
-        if(chromossome.value[0] != chromossome.value[-1]):
+        if(chromossome.value[0] != chromossome.value[-1]): #Verify if the route in chromossome returns to its origin.
             generate_new_son = True
         for i in range(1, self.chromossome_size - 1):
             for j in range(i + 1, self.chromossome_size):
-                if chromossome.value[i] == chromossome.value[j]:
+                if chromossome.value[i] == chromossome.value[j]: #Verify if each city is visited only once. 
                     generate_new_son = True
         if generate_new_son == True:
             chromossome.value = sample(xrange(1, self.chromossome_size + 1),  self.chromossome_size)
             chromossome.value.append(chromossome.value[0])
             self.verify_valid_son(chromossome)
-                    
+            
+    """ Implementation of the tournament selection operator.
+    """
     def tournament(self):
         fathers = []
         best_index = 0
@@ -65,13 +78,9 @@ class GA():
                 best_index = i
                 best_fitness = fathers[i].relative_fitness
         return fathers[best_index]
-
-    def sum_all_fitness(self):
-        sum_fitness = 0
-        for chromossome in self.population:
-            sum_fitness += chromossome.relative_fitness
-        return sum_fitness
-        
+    
+    """ Implementation of the roulette selection ooperator. 
+    """
     def roulette(self):
         index = 0
         aux_sum = 0
@@ -82,7 +91,17 @@ class GA():
             i += 1
         index = i - 1
         return self.population[index]
+    
+    """ Returns the sum of all fitness in population.
+    """
+    def sum_all_fitness(self):
+        sum_fitness = 0
+        for chromossome in self.population:
+            sum_fitness += chromossome.relative_fitness
+        return sum_fitness
 
+    """ Gets the best chromossome in population, according to its relative fitness.
+    """
     def get_best(self, population):
         index_best = 0
         fitness_best = 0
@@ -92,6 +111,9 @@ class GA():
                 fitness_best = population[i].relative_fitness
         return index_best
     
+    """ Updates the population, creating sons by crossover of two fathers (chromossomes),
+          and adding the sons to the new population.
+    """
     def generation(self):
         new_population = []
         index_fathers = 1
@@ -121,7 +143,9 @@ class GA():
                 new_population.append(son)
         self.population = deepcopy(new_population)
         self.fitness(self.population)
-
+        
+    """Calculates the media of the fitness in population
+    """
     def calc_media(self, population):
         media = 0.0
         for chromossome in population:
@@ -129,6 +153,9 @@ class GA():
         media = media / len(population)
         return media
 
+    """ Verify if the population is converging,
+          calculating the difference between the media and the best chromossome inn population.
+    """
     def verify_convergence(self):
         convergence = False
         index_best = self.get_best(self.population)
@@ -136,6 +163,8 @@ class GA():
             convergence = True
         return convergence
     
+    """ The main process of the genetic algorithm.
+    """
     def process(self):
         self.get_cities("cidades.txt")
         self.init_pop()
