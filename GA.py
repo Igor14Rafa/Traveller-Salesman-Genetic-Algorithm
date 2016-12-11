@@ -41,8 +41,8 @@ class GA():
     def fitness(self, population):
         index = 0
         for chromossome in population:
-            chromossome.absolute_fitness = 0
-            chromossome.relative_fitness = 0
+            chromossome.absolute_fitness = 0 #Total distance of the route represented by the chromossome
+            chromossome.relative_fitness = 0 #Value used for minimize the problem (Inverse of the absolute_fitness)
             for i in range(self.chromossome_size):
                 chromossome.absolute_fitness += self.cities[int(chromossome.value[i])][int(chromossome.value[i + 1]) - 1] #At each two sequential "cities" in chromossome, adds the edge value to the fitness.
             chromossome.relative_fitness = 1.0/chromossome.absolute_fitness
@@ -158,7 +158,7 @@ class GA():
     
     """ The main process of the genetic algorithm."""
     def process(self):
-        self.get_cities("cidades.txt")
+        self.get_cities("cidades4.txt")
         self.init_pop()
         self.fitness(self.population)
         generation_index = 1
@@ -172,5 +172,5 @@ class GA():
         return self.population[self.get_best(self.population)]
             
 if __name__ == "__main__":
-    test = GA(10, 10, 0.5, 0.2, 5, 3, 0)
+    test = GA(10, 10, 0.5, 0.1, 4, 3, 1)
     test.process()
