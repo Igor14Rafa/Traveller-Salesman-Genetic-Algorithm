@@ -20,10 +20,16 @@ class Chromossome():
         sons = []
         cutpoint = int(random() * self.chromossome_size)
         son_1 = Chromossome(self.chromossome_size, self.crossover_tax, self.mutation_chance)
-        son_1.value = self.value[0: cutpoint] + chromossome_2.value[cutpoint: (len(self.value))] 
+	if random() < self.crossover_tax:
+        	son_1.value = self.value[0: cutpoint] + chromossome_2.value[cutpoint: (len(self.value))]
+	else:
+		son_1.value = self.value 
         sons.append(son_1)
         son_2 = Chromossome(self.chromossome_size, self.crossover_tax, self.mutation_chance)
-        son_2.value = chromossome_2.value[0: cutpoint] + self.value[cutpoint: (len(self.value))] 
+	if random() < self.crossover_tax:
+        	son_2.value = chromossome_2.value[0: cutpoint] + self.value[cutpoint: (len(self.value))]
+	else:
+		son_2.value = self.value 
         sons.append(son_2)
         return sons
     
