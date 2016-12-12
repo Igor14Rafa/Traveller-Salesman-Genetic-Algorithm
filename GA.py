@@ -15,7 +15,7 @@ class GA():
         self.cities = {}
         self.population = []
         self.selection = selection
-        self.error = 0.01
+        self.error = 0.0000001
         
     """ Creates the dict "cities" with the info of the problem,
           given by the file "filename".
@@ -158,11 +158,11 @@ class GA():
     
     """ The main process of the genetic algorithm."""
     def process(self):
-        self.get_cities("cidades4.txt")
+        self.get_cities("cidades6.txt")
         self.init_pop()
         self.fitness(self.population)
         generation_index = 1
-        while (not self.verify_convergence()) and (generation_index < self.num_generation):
+        while (not self.verify_convergence) and (generation_index < self.num_generation):
             print "\n\n\t\t\tGENERATION {0}\n".format(generation_index)
             generation_index += 1
             self.generation()
@@ -172,5 +172,5 @@ class GA():
         return self.population[self.get_best(self.population)]
             
 if __name__ == "__main__":
-    test = GA(10, 10, 0.5, 0.1, 4, 3, 1)
+    test = GA(10, 50, 0.5, 0.1, 6, 3, 1)
     test.process()
